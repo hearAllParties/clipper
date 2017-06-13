@@ -42,7 +42,7 @@ class Clipper extends React.Component {
                     <div className="describe">{clipBoxWidth}px x {clipBoxHeight}px</div>
                 </div>
                 <div className="clear">
-                    <input type="range" min="50" max="300" onChange={(e) => this.onRange(e)}/>
+                    <input type="range" min="100" max="300" step="10" onChange={(e) => this.onRange(e)}/>
                 </div>
                 {this._renderReUploadBtn()}
             </div>
@@ -72,8 +72,8 @@ class Clipper extends React.Component {
     onRange(e) {
         console.log(e.target.value)
         this.setState({
-            clipBoxWidth: e.target.value,
-            clipBoxHeight: e.target.value
+            clipBoxWidth: e.target.value / 1,
+            clipBoxHeight: e.target.value / 1
         })
         this.clipImg()
         // this.drag()
@@ -181,7 +181,6 @@ class Clipper extends React.Component {
         this.setState({
             _mousePos: _mousePos
         })
-
 
         //判断鼠标是否在裁剪区域里面
         // debugger
