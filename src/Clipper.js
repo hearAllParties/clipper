@@ -12,12 +12,8 @@ class Clipper extends React.Component {
             clipBoxHeight: 100,
             _startPos: {},
             _mousePos: {},
-            draging: false
+            dragging: false
         }
-    }
-
-    componentDidMount() {
-        // this.drag()
     }
 
     render() {
@@ -41,12 +37,19 @@ class Clipper extends React.Component {
                     </div>
                     <div className="describe">{clipBoxWidth}px x {clipBoxHeight}px</div>
                 </div>
-                <div className="clear">
-                    <input type="range" min="100" max="300" step="10" onChange={(e) => this.onRange(e)}/>
-                </div>
+                {this._renderRange()}
                 {this._renderReUploadBtn()}
             </div>
         )
+    }
+
+    _renderRange() {
+        const {originUri} = this.state
+        if (originUri) {
+            return <div className="clear">
+                <input type="range" min="100" max="300" step="10" onChange={(e) => this.onRange(e)}/>
+            </div>
+        }
     }
 
     _renderUploadBtn() {
@@ -76,7 +79,6 @@ class Clipper extends React.Component {
             clipBoxHeight: e.target.value / 1
         })
         this.clipImg()
-        // this.drag()
     }
 
     upload(e) {
@@ -133,7 +135,6 @@ class Clipper extends React.Component {
     clipImg() {
         const {originUri, originWidth, originHeight, originImgX, originImgY, clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight} = this.state
         console.log(originWidth, originHeight, originImgX, originImgY, clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight)
-        // debugger
         const coverCanvas = this.refs.cover
         coverCanvas.width = originWidth
         coverCanvas.height = originHeight
@@ -165,7 +166,7 @@ class Clipper extends React.Component {
         const wrapOffsetTop = this.refs.imgWrap.offsetTop
         const coverCanvas = this.refs.cover
 
-        let {draging, clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight, _startPos, _mousePos, originWidth, originHeight} = this.state
+        let {dragging, clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight, _startPos, _mousePos, originWidth, originHeight} = this.state
         e = e || window.event;
         if (e.pageX == null && e.clientX != null) {
             var doc = document.documentElement, body = document.body;
@@ -183,11 +184,9 @@ class Clipper extends React.Component {
         })
 
         //判断鼠标是否在裁剪区域里面
-        // debugger
         if (_mousePos.left > clipBoxX && _mousePos.left < clipBoxX + clipBoxWidth && _mousePos.top > clipBoxY && _mousePos.top < clipBoxY + clipBoxHeight) {
             coverCanvas.style.cursor = 'move';
-            // debugger
-            if (draging) {
+            if (dragging) {
                 //移动时裁剪区域的坐标 = 上次记录的定位 + (当前鼠标的位置 - 按下鼠标的位置)，裁剪区域不能超出遮罩层的区域;
                 if (this.ex + ( _mousePos.left - _startPos.left ) < 0) {
                     clipBoxX = 0;
@@ -196,7 +195,6 @@ class Clipper extends React.Component {
                 } else {
                     clipBoxX = this.ex + ( _mousePos.left - _startPos.left );
                 }
-                debugger
                 if (this.ey + ( _mousePos.top - _startPos.top ) < 0) {
                     clipBoxY = 0;
                 } else if (this.ey + ( _mousePos.top - _startPos.top ) + clipBoxHeight > originHeight) {
@@ -204,7 +202,6 @@ class Clipper extends React.Component {
                 } else {
                     clipBoxY = this.ey + ( _mousePos.top - _startPos.top );
                 }
-                debugger
                 this.setState({
                     clipBoxX: clipBoxX,
                     clipBoxY: clipBoxY
@@ -235,93 +232,15 @@ class Clipper extends React.Component {
 
         this.setState({
             _startPos: _startPos,
-            draging: true
+            dragging: true
         })
     }
 
     onMouseUp(e) {
         this.setState({
-            draging: false
+            dragging: false
         })
     }
-
-    //拖动设置
-    // drag() {
-    //     let draging = false;
-    //     let _startPos = null;
-    //     const wrapOffsetLeft = this.refs.imgWrap.offsetLeft
-    //     const wrapOffsetTop = this.refs.imgWrap.offsetTop
-    //     let {clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight} = this.state
-    //     const coverCanvas = this.refs.cover
-    //     coverCanvas.onmousemove = (e) => {
-    //         e = e || window.event;
-    //         if (e.pageX == null && e.clientX != null) {
-    //             var doc = document.documentElement, body = document.body;
-    //             e.pageX = e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-    //             e.pageY = e.clientY + (doc && doc.scrollTop || body && body.scrollTop);
-    //         }
-    //         //获取鼠标到背景图片的距离
-    //         const _mousePos = {
-    //             left: e.pageX - ( wrapOffsetLeft + e.target.offsetLeft ),
-    //             top: e.pageY - ( wrapOffsetTop + e.target.offsetTop )
-    //         }
-    //
-    //         //判断鼠标是否在裁剪区域里面
-    //         if (_mousePos.left > clipBoxX && _mousePos.left < clipBoxX + clipBoxWidth && _mousePos.top > clipBoxY && _mousePos.top < clipBoxY + clipBoxHeight) {
-    //             console.log(12313)
-    //             coverCanvas.style.cursor = 'move';
-    //
-    //             coverCanvas.onmousedown = (e1) => {
-    //                 const {clipBoxX, clipBoxY} = this.state
-    //                 draging = true;
-    //                 //记录上一次截图的坐标
-    //                 this.ex = clipBoxX;
-    //                 this.ey = clipBoxY;
-    //
-    //                 //记录鼠标按下时候的坐标
-    //                 _startPos = {
-    //                     left: e.pageX - ( wrapOffsetLeft + e1.target.offsetLeft ),
-    //                     top: e.pageY - ( wrapOffsetTop + e1.target.offsetTop )
-    //                 }
-    //             }
-    //
-    //             if (draging) {
-    //                 const {originWidth, originHeight} = this.state
-    //                 //移动时裁剪区域的坐标 = 上次记录的定位 + (当前鼠标的位置 - 按下鼠标的位置)，裁剪区域不能超出遮罩层的区域;
-    //                 if (this.ex + ( _mousePos.left - _startPos.left ) < 0) {
-    //                     clipBoxX = 0;
-    //                 } else if (this.ex + ( _mousePos.left - _startPos.left ) + clipBoxWidth > originWidth) {
-    //                     clipBoxX = originWidth - clipBoxWidth;
-    //                 } else {
-    //                     clipBoxX = this.ex + ( _mousePos.left - _startPos.left );
-    //                 }
-    //
-    //                 if (this.ey + ( _mousePos.top - _startPos.top ) < 0) {
-    //                     clipBoxY = 0;
-    //                 } else if (this.ey + ( _mousePos.top - _startPos.top ) + clipBoxHeight > originHeight) {
-    //                     clipBoxY = originHeight - clipBoxHeight;
-    //                 } else {
-    //                     clipBoxY = this.ey + ( _mousePos.top - _startPos.top );
-    //                 }
-    //
-    //                 this.setState({
-    //                     clipBoxX: clipBoxX,
-    //                     clipBoxY: clipBoxY
-    //                 })
-    //
-    //                 this.clipImg();
-    //             }
-    //
-    //             document.body.onmouseup = function () {
-    //                 draging = false;
-    //                 document.onmousemove = null;
-    //                 document.onmouseup = null;
-    //             }
-    //         } else {
-    //             coverCanvas.style.cursor = 'auto';
-    //         }
-    //     }
-    // }
 }
 
 export default Clipper;
