@@ -34,8 +34,7 @@
     },
     "scripts": {
         "start": "webpack-dev-server --progress --colors",
-        "build": "cross-env NODE_ENV=production babel ./src --out-dir ./lib",
-        "build-1": "NODE_ENV=production webpack --config ./webpack.production.config.js"
+        "build": "cross-env NODE_ENV=production babel ./src --out-dir ./lib"
     },
     "author": "Eugene",
     "license": "Apache 2"

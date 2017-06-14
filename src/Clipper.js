@@ -1,6 +1,6 @@
 'use strict';
 import React from 'react'
-import './index.css'
+import '../index.css'
 
 class Clipper extends React.Component {
     constructor(props) {
