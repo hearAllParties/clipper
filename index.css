@@ -1,37 +1,19 @@
 /*  component */
 .clipper-wrap {
-    width: 510px;
+    width: 850px;
     box-sizing: border-box;
 }
 
 .clipper-wrap .clipper-main {
-    width: 360px;
-    height: 360px;
+    width: 500px;
+    height: 500px;
     position: relative;
     background: #f2f2f2;
     display: inline-block;
     float: left;
+    text-align: center;
 }
 
-.clipper-wrap .clipper-main .canvas-group {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-}
-
-.clipper-main .canvas-group #origin {
-    position: absolute;
-}
-
-.clipper-main .canvas-group #cover {
-    position: absolute;
-    z-index: 9999;
-    display: none;
-    top: 0px;
-    left: 0px;
-}
 
 .clipper-wrap .clipper-sub .preview {
     font-size: 13px;
@@ -45,8 +27,8 @@
 }
 
 .clipper-wrap .clipper-sub .imgItem {
-    width: 100px;
-    height: 100px;
+    width: 300px;
+    height: 300px;
     background: #fff;
     border: 1px solid #eee;
     margin-top: 15px;
@@ -77,6 +59,7 @@
     height: 20px;
     line-height: 20px;
     cursor: pointer;
+    text-align: center;
 }
 
 .clipper-wrap .upload-btn:hover {
@@ -103,8 +86,8 @@
 }
 
 .clipper-wrap .clipper-sub {
-    width: 135px;
-    height: 360px;
+    width: 330px;
+    height: 500px;
     text-align: center;
     background: #f2f2f2;
     display: inline-block;

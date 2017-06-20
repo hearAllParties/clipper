@@ -1,55 +1,145 @@
 'use strict';
-import React from 'react'
+import React, { PropTypes } from 'react'
+import ReactCrop from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
 import '../index.css'
 
 class Clipper extends React.Component {
+
+    static propTypes = {
+        originUri: PropTypes.string,
+        crop: PropTypes.shape({
+            x: PropTypes.number,
+            y: PropTypes.number,
+            width: PropTypes.number,
+            height: PropTypes.number,
+        }),
+        minWidth: PropTypes.number,
+        minHeight: PropTypes.number,
+        maxWidth: PropTypes.number,
+        maxHeight: PropTypes.number,
+        keepSelection: PropTypes.bool,
+        onConfirm:  PropTypes.func,
+        onChange: PropTypes.func,
+        onComplete: PropTypes.func,
+        onImageLoaded: PropTypes.func,
+        onAspectRatioChange: PropTypes.func,
+        onDragStart: PropTypes.func,
+        onDragEnd: PropTypes.func,
+        disabled: PropTypes.bool,
+        crossorigin: PropTypes.string,
+    }
+
+    static defaultProps = {
+        originUri: '',
+        crop: undefined,
+        crossorigin: undefined,
+        disabled: false,
+        maxWidth: 100,
+        maxHeight: 100,
+        minWidth: 0,
+        minHeight: 0,
+        keepSelection: false,
+        onConfirm: () => {},
+        onChange: () => {},
+        onComplete: () => {},
+        onImageLoaded: () => {},
+        onAspectRatioChange: () => {},
+        onCropComplete: ()=>{},
+        onDragStart: () => {},
+        onDragEnd: () => {},
+    }
+
     constructor(props) {
         super(props);
         this.state = {
-            clipBoxX: 0,
-            clipBoxY: 0,
-            clipBoxWidth: 100,
-            clipBoxHeight: 100,
-            _startPos: {},
-            _mousePos: {},
-            dragging: false
+            ...props
         }
     }
 
     render() {
-        const {originUri, clipBoxWidth, clipBoxHeight} = this.state
+        const {originUri, crop, keepSelection, disabled, crossorigin} = this.state
         return (
             <div className="clipper-wrap">
                 <div className="clipper-main" ref="imgWrap">
-                    <div className="canvas-group">
-                        <canvas id="origin" ref="origin" src={originUri}></canvas>
-                        <canvas id="cover" ref="cover"
-                                onMouseMove={(e) => this.onMouseMove(e)}
-                                onMouseDown={(e) => this.onMouseDown(e)}
-                                onMouseUp={(e) => this.onMouseUp(e)}/>
-                    </div>
                     {this._renderUploadBtn()}
+                    <ReactCrop src={originUri}
+                               onImageLoaded={(crop, image, pixelCrop) => this.onImageLoaded(crop, image, pixelCrop)}
+                               onComplete={(crop, pixelCrop) => this.onCropComplete(crop, pixelCrop)}
+                               onAspectRatioChange={(crop, pixelCrop) => this.onAspectRatioChange(crop, pixelCrop)}
+                               onChange={(crop, pixelCrop) => this.onChange(crop, pixelCrop)}
+                               onDragStart={(e) => this.onDragStart(e)}
+                               onDragEnd={(e) => this.onDragEnd(e)}
+                               crop={crop}
+                               keepSelection={keepSelection}
+                               disabled={disabled}
+                               crossorigin={crossorigin}
+                    />
                 </div>
                 <div className="clipper-sub">
                     <div className="preview">预览</div>
                     <div className="imgItem">
-                        <span id="clipped" ref="clipped"></span>
+                        <canvas id="clipped" ref="clipped"></canvas>
                     </div>
-                    <div className="describe">{clipBoxWidth}px x {clipBoxHeight}px</div>
+                    <div className="describe">300px x 300px</div>
                 </div>
-                {this._renderRange()}
                 {this._renderReUploadBtn()}
             </div>
         )
     }
 
-    _renderRange() {
-        const {originUri} = this.state
-        if (originUri) {
-            return <div className="clear">
-                <input type="range" min="100" max="300" step="10" onChange={(e) => this.onRange(e)}/>
-            </div>
+    onConfirm() {
+        const {clippedUri, onConfirm} = this.state
+        // onConfirm(clippedUri)
+    }
+
+    onChange(crop, pixelCrop) {
+        const {originUri, onChange} = this.state
+        const canvas = this.refs.clipped
+        const ctx = canvas.getContext('2d')
+        const img = new Image()
+        img.src = originUri
+        img.onload = () => {
+            canvas.width = 300
+            canvas.height = 300
+            ctx.drawImage(img, pixelCrop.x, pixelCrop.y, pixelCrop.width, pixelCrop.height, 0, 0, 300, 300)
+            const clippedUri = canvas.toDataURL()
+            this.setState({
+                clippedUri: clippedUri,
+                crop: {
+                    x: crop.x,
+                    y: crop.y,
+                    width: crop.width,
+                    height: crop.height
+                }
+            })
+            onChange(crop, pixelCrop, clippedUri)
         }
+    }
+
+    onDragStart() {
+        const {onDragStart} = this.state
+        onDragStart()
+    }
+
+    onDragEnd() {
+        const {onDragEnd} = this.state
+        onDragEnd()
+    }
+
+    onImageLoaded(crop, image, pixelCrop) {
+        const {onImageLoaded} = this.state
+        onImageLoaded(crop, image, pixelCrop)
+    }
+
+    onCropComplete(crop, pixelCrop) {
+        const {onCropComplete} = this.state
+        onCropComplete(crop, pixelCrop)
+    }
+
+    onAspectRatioChange(crop, pixelCrop) {
+        const {onAspectRatioChange} = this.state
+        onAspectRatioChange(crop, pixelCrop)
     }
 
     _renderUploadBtn() {
@@ -72,18 +162,9 @@ class Clipper extends React.Component {
         }
     }
 
-    onRange(e) {
-        console.log(e.target.value)
-        this.setState({
-            clipBoxWidth: e.target.value / 1,
-            clipBoxHeight: e.target.value / 1
-        })
-        this.clipImg()
-    }
-
     upload(e) {
         const file = e.target.files[0]
-        const reader = new FileReader();
+        const reader = new FileReader()
         reader.onload = (e) => {
             const data = e.target.result
             this.paintImg(data)
@@ -91,9 +172,10 @@ class Clipper extends React.Component {
         reader.readAsDataURL(file);
     }
 
+    //原图缩放
     paintImg(uri) {
-        const originCanvas = this.refs.origin
-        const ctx = originCanvas.getContext('2d')
+        const canvas = document.createElement('canvas')
+        const ctx = canvas.getContext('2d')
         const wrapWidth = this.refs.imgWrap.offsetWidth
         const wrapHeight = this.refs.imgWrap.offsetHeight
         let ctxImgWidth, ctxImgHeight
@@ -111,135 +193,12 @@ class Clipper extends React.Component {
                 ctxImgWidth = img.width > img.height ? wrapWidth : pWidth
                 ctxImgHeight = img.height > img.width ? wrapHeight : pHeight
             }
-
-            //设置居中
-            const originImgX = (wrapWidth - ctxImgWidth) / 2 + 'px'
-            const originImgY = (wrapHeight - ctxImgHeight) / 2 + 'px'
-            originCanvas.width = ctxImgWidth
-            originCanvas.height = ctxImgHeight
-            originCanvas.style.left = originImgX
-            originCanvas.style.top = originImgY
+            canvas.width = ctxImgWidth
+            canvas.height = ctxImgHeight
             ctx.drawImage(img, 0, 0, ctxImgWidth, ctxImgHeight)
-            const originUri = originCanvas.toDataURL()
-            this.setState({
-                originUri: originUri,
-                originImgX: originImgX,
-                originImgY: originImgY,
-                originWidth: ctxImgWidth,
-                originHeight: ctxImgHeight
-            })
-            this.clipImg()
+            const originUri = canvas.toDataURL()
+            this.setState({originUri: originUri})
         }
-    }
-
-    clipImg() {
-        const {originUri, originWidth, originHeight, originImgX, originImgY, clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight} = this.state
-        console.log(originWidth, originHeight, originImgX, originImgY, clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight)
-        const coverCanvas = this.refs.cover
-        coverCanvas.width = originWidth
-        coverCanvas.height = originHeight
-        coverCanvas.style.display = 'block'
-        coverCanvas.style.left = originImgX
-        coverCanvas.style.top = originImgY
-
-        //绘制遮罩层
-        const ctx = coverCanvas.getContext('2d')
-        ctx.fillStyle = 'rgba(0, 0 , 0, 0.4)'
-        ctx.fillRect(0, 0, originWidth, originHeight)
-        ctx.clearRect(clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight)
-
-        // //绘制缩放裁剪框的按钮
-        // ctx.rect(clipBoxWidth,clipBoxWidth,10,10);
-        // ctx.fillStyle = '#000'
-        // ctx.fill();
-        // ctx.stroke();
-
-        //预览
-        const achieve = this.refs.clipped
-        achieve.style.background = 'url(' + originUri + ')' + -clipBoxX + 'px ' + -clipBoxY + 'px no-repeat';
-        achieve.style.width = clipBoxWidth + 'px'
-        achieve.style.height = clipBoxHeight + 'px'
-    }
-
-    onMouseMove(e) {
-        const wrapOffsetLeft = this.refs.imgWrap.offsetLeft
-        const wrapOffsetTop = this.refs.imgWrap.offsetTop
-        const coverCanvas = this.refs.cover
-
-        let {dragging, clipBoxX, clipBoxY, clipBoxWidth, clipBoxHeight, _startPos, _mousePos, originWidth, originHeight} = this.state
-        e = e || window.event;
-        if (e.pageX == null && e.clientX != null) {
-            var doc = document.documentElement, body = document.body;
-            e.pageX = e.clientX + (doc && doc.scrollLeft || body && body.scrollLeft || 0) - (doc && doc.clientLeft || body && body.clientLeft || 0);
-            e.pageY = e.clientY + (doc && doc.scrollTop || body && body.scrollTop);
-        }
-        //获取鼠标到背景图片的距离
-        _mousePos = {
-            left: e.pageX - ( wrapOffsetLeft + e.target.offsetLeft ),
-            top: e.pageY - ( wrapOffsetTop + e.target.offsetTop )
-        }
-        console.log(_mousePos)
-        this.setState({
-            _mousePos: _mousePos
-        })
-
-        //判断鼠标是否在裁剪区域里面
-        if (_mousePos.left > clipBoxX && _mousePos.left < clipBoxX + clipBoxWidth && _mousePos.top > clipBoxY && _mousePos.top < clipBoxY + clipBoxHeight) {
-            coverCanvas.style.cursor = 'move';
-            if (dragging) {
-                //移动时裁剪区域的坐标 = 上次记录的定位 + (当前鼠标的位置 - 按下鼠标的位置)，裁剪区域不能超出遮罩层的区域;
-                if (this.ex + ( _mousePos.left - _startPos.left ) < 0) {
-                    clipBoxX = 0;
-                } else if (this.ex + ( _mousePos.left - _startPos.left ) + clipBoxWidth > originWidth) {
-                    clipBoxX = originWidth - clipBoxWidth;
-                } else {
-                    clipBoxX = this.ex + ( _mousePos.left - _startPos.left );
-                }
-                if (this.ey + ( _mousePos.top - _startPos.top ) < 0) {
-                    clipBoxY = 0;
-                } else if (this.ey + ( _mousePos.top - _startPos.top ) + clipBoxHeight > originHeight) {
-                    clipBoxY = originHeight - clipBoxHeight;
-                } else {
-                    clipBoxY = this.ey + ( _mousePos.top - _startPos.top );
-                }
-                this.setState({
-                    clipBoxX: clipBoxX,
-                    clipBoxY: clipBoxY
-                })
-                this.clipImg();
-            }
-        } else {
-            coverCanvas.style.cursor = 'auto';
-        }
-
-    }
-
-    onMouseDown(e) {
-        console.log('down')
-        const {clipBoxX, clipBoxY} = this.state
-        const wrapOffsetLeft = this.refs.imgWrap.offsetLeft
-        const wrapOffsetTop = this.refs.imgWrap.offsetTop
-
-        //记录上一次截图的坐标
-        this.ex = clipBoxX;
-        this.ey = clipBoxY;
-
-        //记录鼠标按下时候的坐标
-        const _startPos = {
-            left: e.pageX - ( wrapOffsetLeft + e.target.offsetLeft ),
-            top: e.pageY - ( wrapOffsetTop + e.target.offsetTop )
-        }
-
-        this.setState({
-            _startPos: _startPos,
-            dragging: true
-        })
-    }
-
-    onMouseUp(e) {
-        this.setState({
-            dragging: false
-        })
     }
 }
 
