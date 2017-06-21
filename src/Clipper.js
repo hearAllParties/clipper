@@ -5,7 +5,6 @@ import 'react-image-crop/dist/ReactCrop.css'
 import '../index.css'
 
 class Clipper extends React.Component {
-
     static propTypes = {
         originUri: PropTypes.string,
         crop: PropTypes.shape({
@@ -90,7 +89,7 @@ class Clipper extends React.Component {
 
     onConfirm() {
         const {clippedUri, onConfirm} = this.state
-        // onConfirm(clippedUri)
+        onConfirm(clippedUri)
     }
 
     onChange(crop, pixelCrop) {
