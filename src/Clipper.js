@@ -57,7 +57,7 @@ class Clipper extends React.Component {
     }
 
     render() {
-        const {originUri, crop, keepSelection, disabled, crossorigin} = this.state
+        const {originUri, crop, keepSelection, disabled, crossorigin, maxWidth, maxHeight, minWidth, minHeight} = this.state
         return (
             <div className="clipper-wrap">
                 <div className="clipper-main" ref="imgWrap">
@@ -70,6 +70,10 @@ class Clipper extends React.Component {
                                onDragStart={(e) => this.onDragStart(e)}
                                onDragEnd={(e) => this.onDragEnd(e)}
                                crop={crop}
+                               maxWidth={maxWidth}
+                               maxHeight={maxHeight}
+                               minWidth={minWidth}
+                               minHeight={minHeight}
                                keepSelection={keepSelection}
                                disabled={disabled}
                                crossorigin={crossorigin}
@@ -109,7 +113,8 @@ class Clipper extends React.Component {
                     x: crop.x,
                     y: crop.y,
                     width: crop.width,
-                    height: crop.height
+                    height: crop.height,
+                    aspect: this.state.crop.aspect
                 }
             })
             onChange(crop, pixelCrop, clippedUri)
@@ -128,6 +133,7 @@ class Clipper extends React.Component {
 
     onImageLoaded(crop, image, pixelCrop) {
         const {onImageLoaded} = this.state
+        this.onChange(crop, pixelCrop)
         onImageLoaded(crop, image, pixelCrop)
     }
 

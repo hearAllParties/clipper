@@ -54,12 +54,12 @@
     overflow: hidden;
     font-size: 13px;
     color: #888;
-    padding: 3px 5px;
     width: 70px;
-    height: 20px;
-    line-height: 20px;
+    height: 25px;
+    line-height: 26px;
     cursor: pointer;
     text-align: center;
+    margin-top: 10px;
 }
 
 .clipper-wrap .upload-btn:hover {
@@ -80,8 +80,7 @@
 .clipper-wrap .clear {
     position: relative;
     width: 80px;
-    height: 20px;
-    padding-top: 20px;
+    height: 30px;
     clear: both;
 }
 
