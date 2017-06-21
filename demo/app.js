@@ -15,7 +15,7 @@ class APP extends React.Component {
                 width: 30,
                 aspect: 1
             },
-            onConfirm: this.onConfirm,
+            onDragEnd: this.onDragEnd,
             onChange: this.onChange,
             onImageLoaded: this.onImageLoaded
         }
@@ -27,10 +27,10 @@ class APP extends React.Component {
     }
 
     onChange(crop, pixelCrop, clippedUri) {
-        console.log('移动截图：', crop, pixelCrop, clippedUri)
+        // console.log('移动截图：', crop, pixelCrop, clippedUri)
     }
 
-    onConfirm(url) {
+    onDragEnd(url) {
         console.log('截图地址：' + url)
     }
 

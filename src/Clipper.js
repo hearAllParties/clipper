@@ -18,7 +18,6 @@ class Clipper extends React.Component {
         maxWidth: PropTypes.number,
         maxHeight: PropTypes.number,
         keepSelection: PropTypes.bool,
-        onConfirm:  PropTypes.func,
         onChange: PropTypes.func,
         onComplete: PropTypes.func,
         onImageLoaded: PropTypes.func,
@@ -39,7 +38,6 @@ class Clipper extends React.Component {
         minWidth: 0,
         minHeight: 0,
         keepSelection: false,
-        onConfirm: () => {},
         onChange: () => {},
         onComplete: () => {},
         onImageLoaded: () => {},
@@ -91,11 +89,6 @@ class Clipper extends React.Component {
         )
     }
 
-    onConfirm() {
-        const {clippedUri, onConfirm} = this.state
-        onConfirm(clippedUri)
-    }
-
     onChange(crop, pixelCrop) {
         const {originUri, onChange} = this.state
         const canvas = this.refs.clipped
@@ -127,8 +120,8 @@ class Clipper extends React.Component {
     }
 
     onDragEnd() {
-        const {onDragEnd} = this.state
-        onDragEnd()
+        const {onDragEnd, clippedUri} = this.state
+        onDragEnd(clippedUri)
     }
 
     onImageLoaded(crop, image, pixelCrop) {
