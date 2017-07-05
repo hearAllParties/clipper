@@ -13,8 +13,10 @@ class APP extends React.Component {
                 x: 10,
                 y: 10,
                 width: 30,
-                aspect: 1
+                aspect: 16 / 9
             },
+            // clipWidth: 375,
+            // clipHeight: 210,
             onDragEnd: this.onDragEnd,
             onChange: this.onChange,
             onImageLoaded: this.onImageLoaded
@@ -31,7 +33,7 @@ class APP extends React.Component {
     }
 
     onDragEnd(url) {
-        console.log('截图地址：' + url)
+        // console.log('截图地址：' + url)
     }
 
     onImageLoaded(crop, image, pixelCrop) {
