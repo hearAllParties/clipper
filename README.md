@@ -2,6 +2,8 @@
 
 A responsive image clipper tool for React. 
 
+
+
 ## run demo
 ```
 npm start 
@@ -15,6 +17,8 @@ Include the main js module, e.g.:
 ```js
 import ReactClipper from 'react-clipper'
 ```
+## follow by
+https://github.com/DominicTobias/react-image-crop
 
 ## Props
 
@@ -115,7 +119,6 @@ A callback which happens when a user releases the cursor or touch after dragging
 #### crossorigin (optional)
 
 Allows setting the crossorigin attribute used for the img tags.
-
 
 ## Developing
 To develop run `npm run build`, this will recompile your JS and CSS on changes.
