@@ -61,32 +61,35 @@ class Clipper extends React.Component {
     render () {
         const {originUri, clipWidth, clipHeight, crop, keepSelection, disabled, crossorigin, maxWidth, maxHeight, minWidth, minHeight} = this.state
         return (
-            <div className="clipper-wrap" style={{width: 545 + clipWidth}}>
-                <div className="clipper-main" ref="imgWrap">
-                    {this._renderUploadBtn()}
-                    <ReactCrop src={originUri}
-                               onImageLoaded={(crop, image, pixelCrop) => this.onImageLoaded(crop, image, pixelCrop)}
-                               onComplete={(crop, pixelCrop) => this.onCropComplete(crop, pixelCrop)}
-                               onAspectRatioChange={(crop, pixelCrop) => this.onAspectRatioChange(crop, pixelCrop)}
-                               onChange={(crop, pixelCrop) => this.onChange(crop, pixelCrop)}
-                               onDragStart={(e) => this.onDragStart(e)}
-                               onDragEnd={(e) => this.onDragEnd(e)}
-                               crop={crop}
-                               maxWidth={maxWidth}
-                               maxHeight={maxHeight}
-                               minWidth={minWidth}
-                               minHeight={minHeight}
-                               keepSelection={keepSelection}
-                               disabled={disabled}
-                               crossorigin={crossorigin}
-                    />
-                </div>
-                <div className="clipper-sub" style={{width: 30 + clipWidth}}>
-                    <div className="preview">预览</div>
-                    <div className="imgItem" style={{width: clipWidth, height: clipHeight}}>
-                        <canvas id="clipped" ref="clipped" style={{width: clipWidth, height: clipHeight}}></canvas>
+            <div className="clipper-wrap" >
+                <div style={{width: 545 + clipWidth, height: 500}}>
+                    <div className="clipper-main" ref="imgWrap">
+                        {this._renderUploadBtn()}
+                        <ReactCrop src={originUri}
+                                   onImageLoaded={(crop, image, pixelCrop) => this.onImageLoaded(crop, image, pixelCrop)}
+                                   onComplete={(crop, pixelCrop) => this.onCropComplete(crop, pixelCrop)}
+                                   onAspectRatioChange={(crop, pixelCrop) => this.onAspectRatioChange(crop, pixelCrop)}
+                                   onChange={(crop, pixelCrop) => this.onChange(crop, pixelCrop)}
+                                   onDragStart={(e) => this.onDragStart(e)}
+                                   onDragEnd={(e) => this.onDragEnd(e)}
+                                   crop={crop}
+                                   maxWidth={maxWidth}
+                                   maxHeight={maxHeight}
+                                   minWidth={minWidth}
+                                   minHeight={minHeight}
+                                   keepSelection={keepSelection}
+                                   disabled={disabled}
+                                   crossorigin={crossorigin}
+                        />
                     </div>
-                    <div className="describe">{clipWidth}px x {clipHeight}px</div>
+                    <div className="clipper-sub" style={{width: 30 + clipWidth}}>
+                        <div className="preview">预览</div>
+                        <div className="imgItem" style={{width: clipWidth, height: clipHeight}}>
+                            <canvas id="clipped" ref="clipped" style={{width: clipWidth, height: clipHeight}}></canvas>
+                        </div>
+                        <div className="describe">{clipWidth}px x {clipHeight}px</div>
+                    </div>
+                    <img src={originUri} />
                 </div>
                 {this._renderReUploadBtn()}
             </div>
