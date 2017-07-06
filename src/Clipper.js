@@ -89,7 +89,6 @@ class Clipper extends React.Component {
                         </div>
                         <div className="describe">{clipWidth}px x {clipHeight}px</div>
                     </div>
-                    <img src={originUri} />
                 </div>
                 {this._renderReUploadBtn()}
             </div>
